@@ -9,7 +9,7 @@ The output is a single PDF file, with a page per week.
 # To generate the time sheet for the current week
 run.sh
 
-# To generate the time sheets from a week 4 until this week
+# To generate the time sheets from week 4 until this week
 run.sh 4
 	
 # To generate the time sheets from week 5 until week 7
@@ -19,7 +19,7 @@ run.sh 4 7
 ## Configuration
 
 * Rename *conf/conf-sample.properties* into *conf/conf.properties*.
-* Update the fields. 
+* Update the file content. 
 
 ## Roadmap
 
