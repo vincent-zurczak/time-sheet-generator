@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package net.vzurczak.timesheetgenerator;
+package net.vzurczak.timesheetgenerator.internal;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Vincent Zurczak
  */
 public class GenerationDataBean {
 
+	public final List<File> signatures = new ArrayList<File> ();
 	private String name, managerName;
-	private int startWeek, endWeek, totalHours;
+	private int startWeek, endWeek, totalHours, year;
 
 
 	/**
@@ -93,5 +98,19 @@ public class GenerationDataBean {
 	 */
 	public void setTotalHours( int totalHours ) {
 		this.totalHours = totalHours;
+	}
+
+	/**
+	 * @return the year
+	 */
+	public int getYear() {
+		return this.year;
+	}
+
+	/**
+	 * @param year the year to set
+	 */
+	public void setYear( int year ) {
+		this.year = year;
 	}
 }

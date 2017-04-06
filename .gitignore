@@ -19,6 +19,7 @@
 .idea/
 
 # Skip test files
-conf/
 conf/conf.properties
+conf/schedule.properties
+pdf/
 *.pdf

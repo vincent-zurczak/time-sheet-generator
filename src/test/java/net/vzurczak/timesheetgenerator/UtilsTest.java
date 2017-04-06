@@ -18,10 +18,10 @@ package net.vzurczak.timesheetgenerator;
 
 import java.util.Calendar;
 
-import junit.framework.Assert;
-import net.vzurczak.timesheetgenerator.Utils;
-
 import org.junit.Test;
+
+import junit.framework.Assert;
+import net.vzurczak.timesheetgenerator.internal.Utils;
 
 /**
  * @author Vincent Zurczak
@@ -54,11 +54,11 @@ public class UtilsTest {
 	@Test
 	public void testFindCalendar() {
 
-		Calendar calendar = Utils.findCalendar( 41 );
+		Calendar calendar = Utils.findCalendar( 41, -1 );
 		Assert.assertEquals( Calendar.MONDAY, calendar.get( Calendar.DAY_OF_WEEK ));
 		Assert.assertEquals( 41, calendar.get( Calendar.WEEK_OF_YEAR ));
 
-		calendar = Utils.findCalendar( 1 );
+		calendar = Utils.findCalendar( 1, -1 );
 		Assert.assertEquals( Calendar.MONDAY, calendar.get( Calendar.DAY_OF_WEEK ));
 		Assert.assertEquals( 1, calendar.get( Calendar.WEEK_OF_YEAR ));
 	}

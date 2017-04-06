@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package net.vzurczak.timesheetgenerator;
+package net.vzurczak.timesheetgenerator.internal;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Properties;
+import java.util.Random;
 
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -28,6 +32,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
@@ -47,14 +52,25 @@ public class PdfGenerator {
 	/**
 	 * Creates a PDF document.
 	 * @param bean a generation bean (not null)
+	 * @param scheduleProperties the details of the schedule (not null)
 	 * @throws DocumentException
 	 * @throws FileNotFoundException
 	 */
-	public void createDocument( GenerationDataBean bean )
-	throws FileNotFoundException, DocumentException {
+	public void createDocument( GenerationDataBean bean, Properties scheduleProperties )
+	throws Exception {
+
+		// File name
+		StringBuilder sb = new StringBuilder();
+		sb.append( "Feuille-De-Temps--s" );
+		sb.append( bean.getStartWeek());
+		sb.append( "--s" );
+		sb.append( bean.getEndWeek());
+		sb.append( "--" );
+		sb.append( bean.getYear());
+		sb.append( ".pdf" );
 
 		// Create the document
-		File outputFile = new File( "./Feuille-De-Temps.pdf" );
+		File outputFile = new File( "./pdf/" + sb.toString());
 		final Document doc = new Document( PageSize.A4.rotate());
 		PdfWriter.getInstance( doc, new FileOutputStream( outputFile ));
 
@@ -73,7 +89,7 @@ public class PdfGenerator {
 
 		// Add pages
 		for( int i=bean.getStartWeek(); i<=bean.getEndWeek(); i++ )
-			addPageForWeek( i, doc, bean );
+			addPageForWeek( i, doc, bean, scheduleProperties );
 
 		// That's it!
 		doc.close();
@@ -85,15 +101,18 @@ public class PdfGenerator {
 	 * @param i the week number
 	 * @param doc the document to update
 	 * @param bean a generation bean (not null)
+	 * @param scheduleProperties
 	 * @throws DocumentException
+	 * @throws IOException
+	 * @throws MalformedURLException
 	 */
-	private void addPageForWeek( int weekNumber, Document doc, GenerationDataBean bean  )
-	throws DocumentException {
+	private void addPageForWeek( int weekNumber, Document doc, GenerationDataBean bean, Properties scheduleProperties  )
+	throws DocumentException, MalformedURLException, IOException {
 
 		doc.newPage();
 		final Font boldFont = FontFactory.getFont( FontFactory.HELVETICA_BOLD );
 		final Font normalFont = FontFactory.getFont( FontFactory.HELVETICA );
-		Calendar calendar = Utils.findCalendar( weekNumber );
+		Calendar calendar = Utils.findCalendar( weekNumber, bean.getYear());
 
 		// Title
 		Paragraph paragraph = new Paragraph( "Bordereau de Déclaration des Temps", boldFont );
@@ -160,7 +179,14 @@ public class PdfGenerator {
 		signaturesTable.addCell( c );
 
 		doc.add( signaturesTable );
-		doc.add( new Paragraph( " " ));
+
+		// Signature image
+		int random = new Random().nextInt( bean.signatures.size());
+		Image img = Image.getInstance( bean.signatures.get( random ).toURI().toURL());
+		img.scaleToFit( 200, 100 );
+		img.setIndentationLeft( 25 + (random * random * 14) % 51 );
+
+		doc.add( img );
 		doc.add( new Paragraph( " " ));
 		doc.add( new Paragraph( " " ));
 		doc.add( new Paragraph( " " ));
@@ -179,12 +205,31 @@ public class PdfGenerator {
 		timeTable.addCell( newCell( "Total", 10 ));
 		timeTable.addCell( newCell( "Heures Effectuées", 20 ));
 
-		for( int i=0; i<5; i++ )
-			timeTable.addCell( newCell( "", 20 ));
+		int total = 0;
+		boolean daysOff = false;
 
-		if( bean.getTotalHours() > 0 )
-			timeTable.addCell( newCell( bean.getTotalHours() + " h", 20 ));
+		calendar.add( Calendar.DATE, -5 );
+		for( int i=0; i<5; i++ ) {
+			String key = new SimpleDateFormat( "dd_MM_yyyy" ).format( calendar.getTime());
+			String value = scheduleProperties.getProperty( key );
 
+			if( ! value.matches( "\\d+" )) {
+				value = "0\n\n" + value;
+				daysOff = true;
+			} else {
+				total += Integer.parseInt( value );
+			}
+
+			timeTable.addCell( newCell( value, 20 ));
+			calendar.add( Calendar.DATE, 1 );
+		}
+
+		if( total > bean.getTotalHours())
+			throw new IOException( "Too many hours, you were supposed to do " + bean.getTotalHours() + " hours..." );
+		else if( ! daysOff && total != bean.getTotalHours())
+			throw new IOException( "Wrong schedule, you were supposed to do EXACTLY " + bean.getTotalHours() + " hours..." );
+
+		timeTable.addCell( newCell( total + " h", 20 ));
 		timeTable.completeRow();
 		doc.add( timeTable );
 	}
@@ -194,8 +239,10 @@ public class PdfGenerator {
 
 		PdfPCell c = new PdfPCell( new Phrase( content ));
 		c.setHorizontalAlignment( Element.ALIGN_CENTER );
-		c.setPaddingBottom( padding );
 		c.setPaddingTop( padding );
+		c.setPaddingBottom( padding );
+		c.setPaddingLeft( padding / 2f );
+		c.setPaddingRight( padding / 2f );
 
 		return c;
 	}
