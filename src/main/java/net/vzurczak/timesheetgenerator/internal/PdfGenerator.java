@@ -181,12 +181,16 @@ public class PdfGenerator {
 		doc.add( signaturesTable );
 
 		// Signature image
-		int random = new Random().nextInt( bean.signatures.size());
-		Image img = Image.getInstance( bean.signatures.get( random ).toURI().toURL());
-		img.scaleToFit( 200, 100 );
-		img.setIndentationLeft( 25 + (random * random * 14) % 51 );
+		if( ! bean.signatures.isEmpty()) {
+			int random = new Random().nextInt( bean.signatures.size());
+			Image img = Image.getInstance( bean.signatures.get( random ).toURI().toURL());
+			img.scaleToFit( 200, 100 );
+			img.setIndentationLeft( 25 + (random * random * 14) % 51 );
+			doc.add( img );
+		} else {
+			doc.add( new Paragraph( " " ));
+		}
 
-		doc.add( img );
 		doc.add( new Paragraph( " " ));
 		doc.add( new Paragraph( " " ));
 		doc.add( new Paragraph( " " ));

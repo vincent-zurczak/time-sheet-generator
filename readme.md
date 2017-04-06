@@ -3,6 +3,22 @@
 A simple Java project that generates time sheet skeletons.  
 The output is a single PDF file, with a page per week.
 
+> I created this project for myself.  
+> I generally run it from Eclipse. So, usability is reduced to its minimum.
+
+
+## Usage
+
+* Fill-in the configuration properties (**conf/conf.properties**).
+* Run the **net.vzurczak.timesheetgenerator.MainScheduleProperties** class to pre-fill your schedule (*conf/schdule.properties*).
+* Run the **net.vzurczak.timesheetgenerator.MainPdf** class and get your PDF under */pdf*.
+
+
+## Configuration
+
+* Rename *conf/conf.sample.properties* into **conf/conf.properties**.
+* Update the file content. 
+
 
 ## Compilation
 
@@ -15,30 +31,6 @@ mvn clean package
 You will then find a ZIP file under the **target** directory.  
 Extract it anywhere you want and run its content.
 
-
-## Usage
-
-``` properties
-# To generate the time sheet for the current week
-run.sh
-
-# To generate the time sheets from week 4 until this week
-run.sh 4
-	
-# To generate the time sheets from week 5 until week 7
-run.sh 4 7
-```
-
-## Configuration
-
-* Rename *conf/conf-sample.properties* into *conf/conf.properties*.
-* Update the file content. 
-
-## Roadmap
-
-* Support the connection to an OBM instance to retrieve holidays and so on...
-* Pre-fill generated files with this information.
-* Add other features to make life easier.
 
 ## License
 
