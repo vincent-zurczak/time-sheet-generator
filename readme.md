@@ -10,7 +10,8 @@ The output is a single PDF file, with a page per week.
 ## Usage
 
 * Fill-in the configuration properties (**conf/conf.properties**).
-* Run the **net.vzurczak.timesheetgenerator.MainScheduleProperties** class to pre-fill your schedule (*conf/schdule.properties*).
+* Run the **net.vzurczak.timesheetgenerator.MainScheduleProperties**.
+* A *conf/schedule.properties* file was created, update its content.
 * Run the **net.vzurczak.timesheetgenerator.MainPdf** class and get your PDF under */pdf*.
 
 
