@@ -3,6 +3,19 @@
 A simple Java project that generates time sheet skeletons.  
 The output is a single PDF file, with a page per week.
 
+
+## Compilation
+
+Make sure you have Maven installed and run...
+
+```bash
+mvn clean package
+```
+
+You will then find a ZIP file under the **target** directory.  
+Extract it anywhere you want and run its content.
+
+
 ## Usage
 
 ``` properties
