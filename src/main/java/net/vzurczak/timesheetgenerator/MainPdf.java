@@ -36,27 +36,10 @@ public class MainPdf {
 
 		try {
 			// Properties
-			final Properties props = Utils.readPropertiesFile( new File( "./conf/conf.properties" ));
 			final Properties scheduleProperties = Utils.readPropertiesFile( new File( "./conf/schedule.properties" ));
 
 			// Prepare the generation
-			GenerationDataBean bean = new GenerationDataBean();
-			bean.setEndWeek( Integer.parseInt( props.getProperty( "week.end", "-1" )));
-			bean.setStartWeek( Integer.parseInt(props.getProperty( "week.start", "1" )));
-			bean.setYear( Integer.parseInt(props.getProperty( "year", "" )));
-			bean.setName( props.getProperty( "your.name", "" ));
-			bean.setManagerName( props.getProperty( "your.manager", "" ));
-
-			String totalHoursAS = props.getProperty( "your.time", "-1" ).trim();
-			if( ! totalHoursAS.isEmpty())
-				bean.setTotalHours( Integer.parseInt( totalHoursAS ));
-
-			// Signatures
-			for( String s : props.getProperty( "signatures", "" ).split( "," )) {
-				File f = new File( s.trim());
-				if( f.exists())
-					bean.signatures.add( f );
-			}
+			GenerationDataBean bean = Utils.parseConfiguration( new File( "./conf/conf.properties" ));
 
 			// Generate and save
 			new PdfGenerator().createDocument( bean, scheduleProperties );

@@ -28,7 +28,6 @@ package net.vzurczak.timesheetgenerator;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Properties;
 import java.util.Random;
 
 import net.vzurczak.timesheetgenerator.internal.GenerationDataBean;
@@ -46,14 +45,8 @@ public class MainScheduleProperties {
 	public static void main( String[] args ) {
 
 		try {
-			// Properties
-			final Properties props = Utils.readPropertiesFile( new File( "./conf/conf.properties" ));
-
 			// Prepare the generation
-			GenerationDataBean bean = new GenerationDataBean();
-			bean.setEndWeek( Integer.parseInt( props.getProperty( "week.end", "-1" )));
-			bean.setStartWeek( Integer.parseInt(props.getProperty( "week.start", "1" )));
-			bean.setYear( Integer.parseInt(props.getProperty( "year", "" )));
+			GenerationDataBean bean = Utils.parseConfiguration( new File( "./conf/conf.properties" ));
 
 			// Let's go...
 			StringBuilder sb = new StringBuilder();

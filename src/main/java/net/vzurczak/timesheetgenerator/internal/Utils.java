@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Properties;
 
 /**
@@ -57,6 +58,59 @@ public class Utils {
 	 */
 	public static int findCurrentWeek() {
 		return Calendar.getInstance().get( Calendar.WEEK_OF_YEAR );
+	}
+
+
+	/**
+	 * @param file the configuration file
+	 * @return the generation bean with the main information
+	 * @throws IOException
+	 */
+	public static GenerationDataBean parseConfiguration( File file ) throws IOException {
+
+		// Properties
+		final Properties props = readPropertiesFile( file );
+
+		// Prepare the generation
+		GenerationDataBean bean = new GenerationDataBean();
+
+		// Deal with the (optional) end week
+		String rawProperty = props.getProperty( "week.end", "" );
+
+		int intValue;
+		if( rawProperty.trim().isEmpty() )
+			intValue = Utils.findCurrentWeek();
+		else
+			intValue = Integer.parseInt( rawProperty );
+
+		bean.setEndWeek( intValue );
+
+		// Deal with the (optional) year
+		rawProperty = props.getProperty( "year", "" );
+		if( rawProperty.trim().isEmpty())
+			intValue = new GregorianCalendar().get( Calendar.YEAR );
+		else
+			intValue = Integer.parseInt( rawProperty );
+
+		bean.setYear( intValue );
+
+		// Deal with other fields
+		bean.setStartWeek( Integer.parseInt( props.getProperty( "week.start", "1" )));
+		bean.setName( props.getProperty( "your.name", "" ));
+		bean.setManagerName( props.getProperty( "your.manager", "" ));
+
+		String totalHoursAS = props.getProperty( "your.time", "-1" ).trim();
+		if( ! totalHoursAS.trim().isEmpty())
+			bean.setTotalHours( Integer.parseInt( totalHoursAS ));
+
+		// Signatures
+		for( String s : props.getProperty( "signatures", "" ).split( "," )) {
+			File f = new File( s.trim());
+			if( f.exists())
+				bean.signatures.add( f );
+		}
+
+		return bean;
 	}
 
 

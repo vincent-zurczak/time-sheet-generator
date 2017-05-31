@@ -16,17 +16,28 @@
 
 package net.vzurczak.timesheetgenerator;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Properties;
 
+import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import junit.framework.Assert;
+import net.vzurczak.timesheetgenerator.internal.GenerationDataBean;
 import net.vzurczak.timesheetgenerator.internal.Utils;
 
 /**
  * @author Vincent Zurczak
  */
 public class UtilsTest {
+
+	@Rule
+	public TemporaryFolder folder = new TemporaryFolder();
+
 
 	@Test
 	public void testFindCurrentWeek() {
@@ -61,5 +72,78 @@ public class UtilsTest {
 		calendar = Utils.findCalendar( 1, -1 );
 		Assert.assertEquals( Calendar.MONDAY, calendar.get( Calendar.DAY_OF_WEEK ));
 		Assert.assertEquals( 1, calendar.get( Calendar.WEEK_OF_YEAR ));
+	}
+
+
+	@Test
+	public void testParseConfiguration_withAllValues() throws Exception {
+
+		Properties props = new Properties();
+		props.setProperty( "week.end", "5" );
+		props.setProperty( "week.start", "2" );
+		props.setProperty( "year", "2015" );
+		props.setProperty( "your.name", "me" );
+		props.setProperty( "your.manager", "him or her" );
+
+		File f = this.folder.newFile();
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		props.store( os, null );
+		Utils.writeStringInto( os.toString( "UTF-8" ), f );
+
+		GenerationDataBean bean = Utils.parseConfiguration( f );
+		Assert.assertNotNull( bean );
+		Assert.assertEquals( 5, bean.getEndWeek());
+		Assert.assertEquals( 2, bean.getStartWeek());
+		Assert.assertEquals( 2015, bean.getYear());
+		Assert.assertEquals( "me", bean.getName());
+		Assert.assertEquals( "him or her", bean.getManagerName());
+	}
+
+
+	@Test
+	public void testParseConfiguration_withOptionalValues() throws Exception {
+
+		Properties props = new Properties();
+		props.setProperty( "week.start", "2" );
+		props.setProperty( "your.name", "me!" );
+		props.setProperty( "your.manager", "him or her" );
+
+		File f = this.folder.newFile();
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		props.store( os, null );
+		Utils.writeStringInto( os.toString( "UTF-8" ), f );
+
+		GenerationDataBean bean = Utils.parseConfiguration( f );
+		Assert.assertNotNull( bean );
+		Assert.assertEquals( Utils.findCurrentWeek(), bean.getEndWeek());
+		Assert.assertEquals( 2, bean.getStartWeek());
+		Assert.assertEquals( new GregorianCalendar().get( Calendar.YEAR ), bean.getYear());
+		Assert.assertEquals( "me!", bean.getName());
+		Assert.assertEquals( "him or her", bean.getManagerName());
+	}
+
+
+	@Test
+	public void testParseConfiguration_withOptionalValuesEmpty() throws Exception {
+
+		Properties props = new Properties();
+		props.setProperty( "week.end", "" );
+		props.setProperty( "week.start", "2" );
+		props.setProperty( "year", "" );
+		props.setProperty( "your.name", "me!" );
+		props.setProperty( "your.manager", "him or her" );
+
+		File f = this.folder.newFile();
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		props.store( os, null );
+		Utils.writeStringInto( os.toString( "UTF-8" ), f );
+
+		GenerationDataBean bean = Utils.parseConfiguration( f );
+		Assert.assertNotNull( bean );
+		Assert.assertEquals( Utils.findCurrentWeek(), bean.getEndWeek());
+		Assert.assertEquals( 2, bean.getStartWeek());
+		Assert.assertEquals( new GregorianCalendar().get( Calendar.YEAR ), bean.getYear());
+		Assert.assertEquals( "me!", bean.getName());
+		Assert.assertEquals( "him or her", bean.getManagerName());
 	}
 }
