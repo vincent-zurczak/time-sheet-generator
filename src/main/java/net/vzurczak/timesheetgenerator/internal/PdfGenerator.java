@@ -62,9 +62,9 @@ public class PdfGenerator {
 		// File name
 		StringBuilder sb = new StringBuilder();
 		sb.append( "Feuille-De-Temps--s" );
-		sb.append( bean.getStartWeek());
+		sb.append( String.format( "%02d", bean.getStartWeek()));
 		sb.append( "--s" );
-		sb.append( bean.getEndWeek());
+		sb.append( String.format( "%02d", bean.getEndWeek()));
 		sb.append( "--" );
 		sb.append( bean.getYear());
 		sb.append( ".pdf" );
