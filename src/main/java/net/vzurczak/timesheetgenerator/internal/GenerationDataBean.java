@@ -26,7 +26,7 @@ import java.util.List;
 public class GenerationDataBean {
 
 	public final List<File> signatures = new ArrayList<File> ();
-	private String name, managerName;
+	private String name, managerName, outputType;
 	private int startWeek, endWeek, totalHours, year;
 
 
@@ -112,5 +112,19 @@ public class GenerationDataBean {
 	 */
 	public void setYear( int year ) {
 		this.year = year;
+	}
+
+	/**
+	 * @return the outputType
+	 */
+	public String getOutputType() {
+		return this.outputType;
+	}
+
+	/**
+	 * @param outputType the outputType to set
+	 */
+	public void setOutputType( String outputType ) {
+		this.outputType = outputType;
 	}
 }

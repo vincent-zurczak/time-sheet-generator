@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-package net.vzurczak.timesheetgenerator.internal;
+package net.vzurczak.timesheetgenerator.internal.generation;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -41,51 +40,37 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import net.vzurczak.timesheetgenerator.internal.GenerationDataBean;
+import net.vzurczak.timesheetgenerator.internal.Utils;
+
 /**
  * @author Vincent Zurczak
  */
-public class PdfGenerator {
+public class PdfGenerator implements IDocumentGenerator {
 
-	final SimpleDateFormat sdf = new SimpleDateFormat( "EEEE d MMMM yyyy" );
-
-
-	/**
-	 * Creates a PDF document.
-	 * @param bean a generation bean (not null)
-	 * @param scheduleProperties the details of the schedule (not null)
-	 * @throws DocumentException
-	 * @throws FileNotFoundException
+	/*
+	 * (non-Javadoc)
+	 * @see net.vzurczak.timesheetgenerator.internal.generation.IDocumentGenerator
+	 * #createDocument(net.vzurczak.timesheetgenerator.internal.GenerationDataBean, java.util.Properties, java.lang.String, java.lang.String)
 	 */
-	public void createDocument( GenerationDataBean bean, Properties scheduleProperties )
+	@Override
+	public void createDocument( GenerationDataBean bean, Properties scheduleProperties, String documentTitle, String documentName )
 	throws Exception {
 
-		// File name
-		StringBuilder sb = new StringBuilder();
-		sb.append( "Feuille-De-Temps--s" );
-		sb.append( String.format( "%02d", bean.getStartWeek()));
-		sb.append( "--s" );
-		sb.append( String.format( "%02d", bean.getEndWeek()));
-		sb.append( "--" );
-		sb.append( bean.getYear());
-		sb.append( ".pdf" );
-
 		// Create the document
-		File outputFile = new File( "./pdf/" + sb.toString());
+		File outputFile = new File( "./pdf/" + documentName + ".pdf" );
+		if( ! outputFile.getParentFile().exists()
+				&& ! outputFile.getParentFile().mkdirs())
+			throw new IOException( outputFile.getParentFile() + " could not be created." );
+
 		final Document doc = new Document( PageSize.A4.rotate());
 		PdfWriter.getInstance( doc, new FileOutputStream( outputFile ));
 
 		doc.open();
 		doc.addAuthor( bean.getName());
 		doc.addCreator( bean.getName());
-
-		String s;
-		if( bean.getEndWeek() - bean.getStartWeek() > 1 )
-			s = "Feuilles de Temps - Semaines " + bean.getStartWeek() + " à " + bean.getEndWeek();
-		else
-			s = "Feuille de Temps - Semaine " + bean.getStartWeek();
-
-		doc.addTitle( s );
-		doc.addSubject( s );
+		doc.addTitle( documentTitle );
+		doc.addSubject( documentTitle );
 
 		// Add pages
 		for( int i=bean.getStartWeek(); i<=bean.getEndWeek(); i++ )
@@ -201,7 +186,7 @@ public class PdfGenerator {
 		timeTable.addCell( new PdfPCell());
 
 		for( int i=0; i<5; i++ ) {
-			final String date = this.sdf.format( calendar.getTime());
+			final String date = new SimpleDateFormat( "EEEE d MMMM yyyy" ).format( calendar.getTime());
 			timeTable.addCell( newCell( date, 10 ));
 			calendar.add( Calendar.DATE, 1 );
 		}

@@ -23,3 +23,5 @@ conf/conf.properties
 conf/schedule.properties
 pdf/
 *.pdf
+odt/
+*.odt

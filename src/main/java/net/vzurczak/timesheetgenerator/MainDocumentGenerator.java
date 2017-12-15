@@ -20,13 +20,15 @@ import java.io.File;
 import java.util.Properties;
 
 import net.vzurczak.timesheetgenerator.internal.GenerationDataBean;
-import net.vzurczak.timesheetgenerator.internal.PdfGenerator;
 import net.vzurczak.timesheetgenerator.internal.Utils;
+import net.vzurczak.timesheetgenerator.internal.generation.IDocumentGenerator;
+import net.vzurczak.timesheetgenerator.internal.generation.OdtGenerator;
+import net.vzurczak.timesheetgenerator.internal.generation.PdfGenerator;
 
 /**
  * @author Vincent Zurczak
  */
-public class MainPdf {
+public class MainDocumentGenerator {
 
 	/**
 	 * The main program.
@@ -35,14 +37,28 @@ public class MainPdf {
 	public static void main( String[] args ) {
 
 		try {
-			// Properties
+			// Load the schedule properties
 			final Properties scheduleProperties = Utils.readPropertiesFile( new File( "./conf/schedule.properties" ));
 
-			// Prepare the generation
+			// Load the generation's parameters
 			GenerationDataBean bean = Utils.parseConfiguration( new File( "./conf/conf.properties" ));
 
+			// Build the title and document name
+			String title;
+			if( bean.getEndWeek() - bean.getStartWeek() > 1 )
+				title = "Feuilles de Temps - Semaines " + String.format( "%02d", bean.getStartWeek()) + " à " + String.format( "%02d", bean.getEndWeek());
+			else
+				title = "Feuille de Temps - Semaine " + String.format( "%02d", bean.getStartWeek());
+
+			String documentName = title.replace( " à ", "  s" ).replace( " Semaines ", " s" ).replace( " ", "-" ).replaceAll( "-{3,}", "--" ).trim();
+			documentName += "--" + bean.getYear();
+			title = title.replace( " 0", " " );
+
 			// Generate and save
-			new PdfGenerator().createDocument( bean, scheduleProperties );
+			IDocumentGenerator gen = "pdf".equalsIgnoreCase( bean.getOutputType()) ? new PdfGenerator() : new OdtGenerator();
+			gen.createDocument( bean, scheduleProperties, title, documentName );
+
+			System.out.println( "Fini !" );
 
 		} catch( Exception e ) {
 			e.printStackTrace();

@@ -94,6 +94,9 @@ public class Utils {
 
 		bean.setYear( intValue );
 
+		// PDF or ODT?
+		bean.setOutputType( props.getProperty( "output.type", "pdf" ));
+
 		// Deal with other fields
 		bean.setStartWeek( Integer.parseInt( props.getProperty( "week.start", "1" )));
 		bean.setName( props.getProperty( "your.name", "" ));
