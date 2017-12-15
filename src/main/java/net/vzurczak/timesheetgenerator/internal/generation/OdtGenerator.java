@@ -62,26 +62,26 @@ public class OdtGenerator implements IDocumentGenerator {
 	 */
 	@Override
 	public void createDocument( GenerationDataBean bean, Properties scheduleProperties, String documentTitle, String documentName )
-	throws Exception {
+			throws Exception {
 
 		// Create the document
 		TextDocument doc = TextDocument.newTextDocument();
 
 		Meta metadata = new Meta( doc.getMetaDom());
-	    metadata.setCreator( bean.getName());
-	    metadata.setTitle( documentTitle );
-	    metadata.setSubject( documentTitle );
+		metadata.setCreator( bean.getName());
+		metadata.setTitle( documentTitle );
+		metadata.setSubject( documentTitle );
 
-	    // Page orientation
+		// Page orientation
 		for( Iterator<StyleMasterPageElement> it = doc.getOfficeMasterStyles().getMasterPages(); it.hasNext(); ) {
 			StyleMasterPageElement page = it.next();
 			String pageLayoutName = page.getStylePageLayoutNameAttribute();
-		    OdfStylePageLayout pageLayoutStyle = page.getAutomaticStyles().getPageLayout( pageLayoutName );
-		    PageLayoutProperties pageLayoutProps = PageLayoutProperties.getOrCreatePageLayoutProperties( pageLayoutStyle );
+			OdfStylePageLayout pageLayoutStyle = page.getAutomaticStyles().getPageLayout( pageLayoutName );
+			PageLayoutProperties pageLayoutProps = PageLayoutProperties.getOrCreatePageLayoutProperties( pageLayoutStyle );
 
-		    double tmp = pageLayoutProps.getPageWidth();
-		    pageLayoutProps.setPageWidth( pageLayoutProps.getPageHeight());
-		    pageLayoutProps.setPageHeight( tmp );
+			double tmp = pageLayoutProps.getPageWidth();
+			pageLayoutProps.setPageWidth( pageLayoutProps.getPageHeight());
+			pageLayoutProps.setPageHeight( tmp );
 		}
 
 		// Content
@@ -113,7 +113,7 @@ public class OdtGenerator implements IDocumentGenerator {
 	 * @throws URISyntaxException
 	 */
 	private void addPageForWeek( int weekNumber, TextDocument doc, GenerationDataBean bean, Properties scheduleProperties  )
-	throws MalformedURLException, IOException, URISyntaxException {
+			throws MalformedURLException, IOException, URISyntaxException {
 
 		Calendar calendar = Utils.findCalendar( weekNumber, bean.getYear());
 		Font boldFont = new Font( "Arial", FontStyle.BOLD, 12, Color.BLACK );
