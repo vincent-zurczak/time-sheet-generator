@@ -1,7 +1,7 @@
 # Time Sheet Generator
 
 A simple Java project that generates time sheet skeletons.  
-The output is a single PDF file, with a page per week.
+The output is a single PDF file (or Open Office document), with a page per week.
 
 > I created this project for myself.  
 > I generally run it from Eclipse. So, usability is reduced to its minimum.
@@ -12,7 +12,7 @@ The output is a single PDF file, with a page per week.
 * Fill-in the configuration properties (**conf/conf.properties**).
 * Run the **net.vzurczak.timesheetgenerator.MainScheduleProperties**.
 * A *conf/schedule.properties* file was created, update its content.
-* Run the **net.vzurczak.timesheetgenerator.MainPdf** class and get your PDF under */pdf*.
+* Run the **net.vzurczak.timesheetgenerator.MainDocumentGenerator** class and get your PDF under */pdf* (or ODT under */odt*).
 
 
 ## Configuration
