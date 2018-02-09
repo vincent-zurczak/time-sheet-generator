@@ -232,7 +232,6 @@ public class OdtGenerator implements IDocumentGenerator {
 			String value = scheduleProperties.getProperty( key );
 
 			if( ! value.matches( "\\d+" )) {
-				value = "0\n\n" + value;
 				daysOff = true;
 			} else {
 				total += Integer.parseInt( value );
@@ -247,7 +246,7 @@ public class OdtGenerator implements IDocumentGenerator {
 		else if( ! daysOff && total != bean.getTotalHours())
 			throw new IOException( "Wrong schedule, you were supposed to do EXACTLY " + bean.getTotalHours() + " hours..." );
 
-		calendarTable.getRowByIndex( 1 ).getCellByIndex( 6 ).setDisplayText( "pom" + total + " h" );
+		calendarTable.getRowByIndex( 1 ).getCellByIndex( 6 ).setDisplayText( total + " h" );
 	}
 
 
