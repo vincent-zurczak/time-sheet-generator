@@ -113,7 +113,7 @@ public class OdtGenerator implements IDocumentGenerator {
 	 * @throws URISyntaxException
 	 */
 	private void addPageForWeek( int weekNumber, TextDocument doc, GenerationDataBean bean, Properties scheduleProperties  )
-			throws MalformedURLException, IOException, URISyntaxException {
+	throws MalformedURLException, IOException, URISyntaxException {
 
 		Calendar calendar = Utils.findCalendar( weekNumber, bean.getYear());
 		Font boldFont = new Font( "Arial", FontStyle.BOLD, 12, Color.BLACK );
@@ -129,17 +129,17 @@ public class OdtGenerator implements IDocumentGenerator {
 
 		// Meta: week and date
 		Calendar endOfWeekCalendar = ((Calendar) calendar.clone());
-		endOfWeekCalendar.add( Calendar.DATE, 4 );
+		incrementTimeByOneDay( endOfWeekCalendar, 4 );
 		String formattedDate = new SimpleDateFormat( "dd/MM/yyyy" ).format( endOfWeekCalendar.getTime());
 
 		Table metaTable = doc.addTable( 2, 2 );
-		metaTable.getRowByIndex( 0 ).getCellByIndex( 0 ).setDisplayText( "Semaine : " );
+		metaTable.getRowByIndex( 0 ).getCellByIndex( 0 ).setStringValue( "Semaine : " );
 		metaTable.getRowByIndex( 0 ).getCellByIndex( 0 ).setFont( boldFont );
-		metaTable.getRowByIndex( 0 ).getCellByIndex( 1 ).setDisplayText( String.valueOf( weekNumber ));
+		metaTable.getRowByIndex( 0 ).getCellByIndex( 1 ).setStringValue( String.valueOf( weekNumber ));
 
-		metaTable.getRowByIndex( 1 ).getCellByIndex( 0 ).setDisplayText( "Date : " );
+		metaTable.getRowByIndex( 1 ).getCellByIndex( 0 ).setStringValue( "Date : " );
 		metaTable.getRowByIndex( 1 ).getCellByIndex( 0 ).setFont( boldFont );
-		metaTable.getRowByIndex( 1 ).getCellByIndex( 1 ).setDisplayText( formattedDate );
+		metaTable.getRowByIndex( 1 ).getCellByIndex( 1 ).setStringValue( formattedDate );
 
 		metaTable.getColumnByIndex( 0 ).setWidth( 25 );
 		invisibleBorders( metaTable );
@@ -150,18 +150,18 @@ public class OdtGenerator implements IDocumentGenerator {
 
 		// Signatures
 		Table signatureTable = doc.addTable( 2, 4 );
-		signatureTable.getRowByIndex( 0 ).getCellByIndex( 0 ).setDisplayText( "Nom : " );
+		signatureTable.getRowByIndex( 0 ).getCellByIndex( 0 ).setStringValue( "Nom : " );
 		signatureTable.getRowByIndex( 0 ).getCellByIndex( 0 ).setFont( boldFont );
-		signatureTable.getRowByIndex( 0 ).getCellByIndex( 1 ).setDisplayText( bean.getName());
+		signatureTable.getRowByIndex( 0 ).getCellByIndex( 1 ).setStringValue( bean.getName());
 
-		signatureTable.getRowByIndex( 1 ).getCellByIndex( 0 ).setDisplayText( "Signature : " );
+		signatureTable.getRowByIndex( 1 ).getCellByIndex( 0 ).setStringValue( "Signature : " );
 		signatureTable.getRowByIndex( 1 ).getCellByIndex( 0 ).setFont( boldFont );
 
-		signatureTable.getRowByIndex( 0 ).getCellByIndex( 2 ).setDisplayText( "Responsable : " );
+		signatureTable.getRowByIndex( 0 ).getCellByIndex( 2 ).setStringValue( "Responsable : " );
 		signatureTable.getRowByIndex( 0 ).getCellByIndex( 2 ).setFont( boldFont );
-		signatureTable.getRowByIndex( 0 ).getCellByIndex( 3 ).setDisplayText( bean.getManagerName());
+		signatureTable.getRowByIndex( 0 ).getCellByIndex( 3 ).setStringValue( bean.getManagerName());
 
-		signatureTable.getRowByIndex( 1 ).getCellByIndex( 2 ).setDisplayText( "Signature : " );
+		signatureTable.getRowByIndex( 1 ).getCellByIndex( 2 ).setStringValue( "Signature : " );
 		signatureTable.getRowByIndex( 1 ).getCellByIndex( 2 ).setFont( boldFont );
 
 		signatureTable.getColumnByIndex( 0 ).setWidth( 25 );
@@ -216,12 +216,12 @@ public class OdtGenerator implements IDocumentGenerator {
 
 		for( int i=0; i<5; i++ ) {
 			final String date = new SimpleDateFormat( "EEEE d MMMM yyyy" ).format( calendar.getTime());
-			calendarTable.getRowByIndex( 0 ).getCellByIndex( i + 1 ).setDisplayText( date );
+			calendarTable.getRowByIndex( 0 ).getCellByIndex( i + 1 ).setStringValue( date );
 			calendar.add( Calendar.DATE, 1 );
 		}
 
-		calendarTable.getRowByIndex( 0 ).getCellByIndex( 6 ).setDisplayText( "Total" );
-		calendarTable.getRowByIndex( 1 ).getCellByIndex( 0 ).setDisplayText( "Heures Effectuées" );
+		calendarTable.getRowByIndex( 0 ).getCellByIndex( 6 ).setStringValue( "Total" );
+		calendarTable.getRowByIndex( 1 ).getCellByIndex( 0 ).setStringValue( "Heures Effectuées" );
 
 		int total = 0;
 		boolean daysOff = false;
@@ -237,8 +237,8 @@ public class OdtGenerator implements IDocumentGenerator {
 				total += Integer.parseInt( value );
 			}
 
-			calendarTable.getRowByIndex( 1 ).getCellByIndex( i + 1 ).setDisplayText( value );
-			calendar.add( Calendar.DATE, 1 );
+			calendarTable.getRowByIndex( 1 ).getCellByIndex( i + 1 ).setStringValue( value );
+			incrementTimeByOneDay( calendar, 1 );
 		}
 
 		if( total > bean.getTotalHours())
@@ -246,7 +246,7 @@ public class OdtGenerator implements IDocumentGenerator {
 		else if( ! daysOff && total != bean.getTotalHours())
 			throw new IOException( "Wrong schedule, you were supposed to do EXACTLY " + bean.getTotalHours() + " hours..." );
 
-		calendarTable.getRowByIndex( 1 ).getCellByIndex( 6 ).setDisplayText( total + " h" );
+		calendarTable.getRowByIndex( 1 ).getCellByIndex( 6 ).setStringValue( total + " h" );
 	}
 
 
@@ -257,5 +257,12 @@ public class OdtGenerator implements IDocumentGenerator {
 				table.getRowByIndex( i ).getCellByIndex( j ).setBorders( CellBordersType.NONE, null );
 			}
 		}
+	}
+	
+	
+	private void incrementTimeByOneDay(Calendar calendar, int numberOfDays) {
+		// calendar.add( Calendar.Date, numberOfDays ) does not always gives the expected result (e.g. end of year)
+		long newTime = calendar.getTimeInMillis() + numberOfDays * 24 * 60 * 60 * 1000;
+		calendar.setTimeInMillis( newTime );
 	}
 }
