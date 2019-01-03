@@ -74,6 +74,7 @@ public class MainScheduleProperties {
 
 			// Let's write it
 			Utils.writeStringInto( sb.toString(), new File( "./conf/schedule.properties" ));
+			System.out.println( "Opération terminée." );
 
 		} catch( Exception e ) {
 			e.printStackTrace();

@@ -74,25 +74,30 @@ public class Utils {
 		// Prepare the generation
 		GenerationDataBean bean = new GenerationDataBean();
 
-		// Deal with the (optional) end week
-		String rawProperty = props.getProperty( "week.end", "" );
-
-		int intValue;
-		if( rawProperty.trim().isEmpty() )
-			intValue = Utils.findCurrentWeek();
-		else
-			intValue = Integer.parseInt( rawProperty );
-
-		bean.setEndWeek( intValue );
-
 		// Deal with the (optional) year
-		rawProperty = props.getProperty( "year", "" );
+		int intValue;
+		String rawProperty = props.getProperty( "year", "" );
 		if( rawProperty.trim().isEmpty())
 			intValue = new GregorianCalendar().get( Calendar.YEAR );
 		else
 			intValue = Integer.parseInt( rawProperty );
 
 		bean.setYear( intValue );
+
+		// Deal with the (optional) end week
+		rawProperty = props.getProperty( "week.end", "" );
+		if( rawProperty.trim().isEmpty()) {
+			// Is it the same year?
+			if( intValue == Calendar.getInstance().get( Calendar.YEAR ))
+				intValue = Utils.findCurrentWeek();
+			else
+				intValue = 52; // There are always 52 weeks in the year
+
+		} else {
+			intValue = Integer.parseInt( rawProperty );
+		}
+
+		bean.setEndWeek( intValue );
 
 		// PDF or ODT?
 		bean.setOutputType( props.getProperty( "output.type", "pdf" ));
